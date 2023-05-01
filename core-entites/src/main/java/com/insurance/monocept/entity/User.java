@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -54,14 +56,22 @@ public class User extends BaseEntity implements Serializable, UserDetails{
 	@Column(name = "last_name")
 	private String lastName;
 	
+	private String loginId;
+	
 	@Column(name = "last_login_date")
 	private String lastLoginDate;
 	
 	@Column(name = "last_login_time")
 	private String lastLoginTime;
 	
+	private String qualification;
+	
 	@OneToOne
 	private UserRole role;
+	
+	@ManyToOne
+	@JoinColumn(name = "empId")
+	private User user;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
