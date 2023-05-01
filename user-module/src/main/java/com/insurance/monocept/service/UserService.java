@@ -10,4 +10,6 @@ public interface UserService {
 
 	ResponseEntity<?> login(UserSignUpDto signUpDto);
 
+	ResponseEntity<?> getUserDetails();
+
 }

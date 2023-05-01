@@ -3,6 +3,7 @@ package com.insurance.monocept.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +28,10 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody UserSignUpDto signUpDto){
 		return userService.login(signUpDto);
+	}
+	
+	@GetMapping("/getUserDetails")
+	public ResponseEntity<?> getUserDetails(){
+		return userService.getUserDetails();
 	}
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.insurance.monocept.dto.ResponseDto;
@@ -22,6 +23,7 @@ import com.insurance.monocept.enums.UserRoles;
 import com.insurance.monocept.repository.UserRepository;
 import com.insurance.monocept.repository.UserRoleRepository;
 import com.insurance.monocept.service.UserService;
+import com.insurance.monocept.utility.AppUtility;
 import com.insurance.monocept.utility.TokenUtility;
 
 @Service
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService{
 	private UserRoleRepository userRoleRepository;
 	
 	@Autowired
-	private BCryptPasswordEncoder encoder;
+	private PasswordEncoder encoder;
 	
 	@Value("${jwt.app.secret}")
 	private String app_secret;
@@ -67,7 +69,10 @@ public class UserServiceImpl implements UserService{
 			}
 			user = new User();
 			user.setEmail(signUpDto.getEmail());
-			user.setEmailVerified(false);
+			user.setFirstName(signUpDto.getFirstName());
+			user.setLastName(signUpDto.getLastName());
+			user.setMobileNo(signUpDto.getMobileNo());
+			user.setEmailVerified(true);
 			user.setLoginAllowed(true);
 			user.setPassword(encoder.encode(signUpDto.getPassword()));
 			user.setRole(userRole);
@@ -134,5 +139,22 @@ public class UserServiceImpl implements UserService{
 			responseDTO.setStatus("fail");
 			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	@Override
+	public ResponseEntity<?> getUserDetails() {
+		User user = AppUtility.getCurrentUser();
+		if(user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setData(null);
+			responseDTO.setMessage("User not found");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+		}
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setData(user);
+		responseDTO.setMessage("get user details successfully");
+		responseDTO.setStatus("Success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 }

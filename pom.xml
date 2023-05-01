@@ -9,6 +9,8 @@
 		<module>core-entities</module>
 		<module>user-module</module>
 		<module>admin-module</module>
+		<module>employee-module</module>
+		<module>agent-module</module>
 	</modules>
 	<build>
 		<plugins>

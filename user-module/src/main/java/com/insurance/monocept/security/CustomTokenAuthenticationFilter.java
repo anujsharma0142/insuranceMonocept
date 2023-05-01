@@ -19,8 +19,8 @@ import com.insurance.monocept.entity.User;
 
 public class CustomTokenAuthenticationFilter extends OncePerRequestFilter{
 
-	@Value("${jwt.token}")
-	private String aidus_token;
+	@Value("${jwt.app.secret}")
+	private String tokenSecret;
 
 	@Autowired
 	private JWTAuthenticationToken jwtToken;
@@ -29,7 +29,7 @@ public class CustomTokenAuthenticationFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		String token = request.getHeader(aidus_token);
+		String token = request.getHeader(tokenSecret);
 		try {
 			authUserByToken(token);
 		} catch (Exception e) {

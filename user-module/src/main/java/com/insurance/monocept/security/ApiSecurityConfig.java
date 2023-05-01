@@ -12,9 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -56,12 +54,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers( "/staticPage", "/app.js",
-				"/rpg-socket/**", "/topic/greetings", "/app/hello", "/user/signup","/user/login", "/verify/**",
-				"/v2/api-docs", "/v3/api-docs", "/configuration/ui", "/swagger-resources/**", "/ configuration/security",
-				"/swagger-ui/**", "/webjars/**", "/user/forgot-password", "/user/forgot-password-otp-verify", "/user/forgot-change-password"
-				, "/user/verified-mail-token/{token}", "/", "/webjars/**", "/price-data-server/**", "/price-connection", "/get/live-price", "/live"
-				, "/user/new-platform-visitors/{ip}", "/user/resend-mail-verification");
+		web.ignoring().antMatchers("/api/v1/user/signup", "/api/v1/user/login");
 	}
 
 }

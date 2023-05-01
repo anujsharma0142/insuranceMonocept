@@ -23,7 +23,7 @@ public class JWTParser {
 	private UserRepository userRepository;
 	
 	@Value("${jwt.app.secret}")
-	private String token_secret;
+	private String tokenSecret;
 	
 	/*@Autowired
 	private APITokenDAO apiTokenDAO;*/
@@ -58,7 +58,7 @@ public class JWTParser {
 		try {
 			//APIToken token = apiTokenDAO.getByToken(jwt);
 			Claims claims = Jwts.parser()
-					.setSigningKey(DatatypeConverter.parseBase64Binary(token_secret))
+					.setSigningKey(DatatypeConverter.parseBase64Binary(tokenSecret))
 					.parseClaimsJws(jwt).getBody();
 			
 			System.out.println("claims " + claims.get("userId"));
