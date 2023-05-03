@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.insurance.monocept.dto.AdminDto;
 import com.insurance.monocept.dto.EmployeeDto;
+import com.insurance.monocept.dto.InsuranceSchemeDto;
 import com.insurance.monocept.dto.InsuranceTypeDto;
+import com.insurance.monocept.dto.PremiumPaymentDetailsDto;
 
 public interface AdminService {
 
@@ -26,5 +28,9 @@ public interface AdminService {
 	ResponseEntity<?> addInsuranceType(InsuranceTypeDto insurancedto);
 
 	ResponseEntity<byte[]> getImage(String fileName);
+
+	ResponseEntity<?> addInsuranceScheme(InsuranceSchemeDto insuranceSchemedto);
+
+	ResponseEntity<?> premiumPaymentDetails(PremiumPaymentDetailsDto premiumPaymentDetailsdto);
 
 }

@@ -26,14 +26,20 @@ import org.springframework.util.StringUtils;
 
 import com.insurance.monocept.dto.AdminDto;
 import com.insurance.monocept.dto.EmployeeDto;
+import com.insurance.monocept.dto.InsuranceSchemeDto;
 import com.insurance.monocept.dto.InsuranceTypeDto;
+import com.insurance.monocept.dto.PremiumPaymentDetailsDto;
 import com.insurance.monocept.dto.ResponseDto;
 import com.insurance.monocept.dto.SignUpResponseDto;
+import com.insurance.monocept.entity.InsuranceScheme;
 import com.insurance.monocept.entity.InsuranceType;
+import com.insurance.monocept.entity.PremiumPaymentDetails;
 import com.insurance.monocept.entity.User;
 import com.insurance.monocept.entity.UserRole;
 import com.insurance.monocept.enums.UserRoles;
+import com.insurance.monocept.repository.InsuranceSchemeRepository;
 import com.insurance.monocept.repository.InsuranceTypeRepository;
+import com.insurance.monocept.repository.PremiumPaymentDetailsRepository;
 import com.insurance.monocept.repository.UserRepository;
 import com.insurance.monocept.repository.UserRoleRepository;
 import com.insurance.monocept.service.AdminService;
@@ -57,6 +63,13 @@ public class AdminServiceImpl implements AdminService{
 	
 	@Autowired
 	private InsuranceTypeRepository insuranceTypeRepository;
+	
+	@Autowired
+	private InsuranceSchemeRepository insuranceSchemeRepository;
+	
+	@Autowired
+	private PremiumPaymentDetailsRepository premiumPaymentDetailsRepository;
+	
 	
 	 private final Path root = Paths.get("./src/main/resources/templates/");
 	
@@ -412,5 +425,89 @@ User user = AppUtility.getCurrentUser();
 //	      throw new RuntimeException("Error: " + e.getMessage());
 //	    }
 	  }
+
+	@Override
+	public ResponseEntity<?> addInsuranceScheme(InsuranceSchemeDto insuranceSchemedto) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		
+		
+		InsuranceScheme insuranceScheme = new InsuranceScheme();
+		
+		
+		InsuranceType insuranceType = insuranceTypeRepository.findById(insuranceSchemedto.getInsuranceType()).orElse(null);
+		
+		insuranceScheme.setCommisionForInstallment(insuranceSchemedto.getCommisionForInstallment());
+		
+		insuranceScheme.setCommisionForRegistration(insuranceSchemedto.getCommisionForRegistration());
+		
+		try {
+			String fileName = StringUtils.cleanPath(insuranceSchemedto.getImg() .getOriginalFilename());
+			byte[] bytes = insuranceScheme.getImg().getBytes();
+			Path path = Paths.get("./src/main/resources/templates/" + fileName);
+	        Files.write(path, bytes);
+	        String imagePath = "http://localhost:8083/api/vi/admin/getImage/" +  fileName;
+	        insuranceScheme.setImg(imagePath);
+	      
+		} catch (IllegalStateException | IOException  e) {
+			e.printStackTrace();
+		}
+		
+		
+		insuranceScheme.setInsuranceType(insuranceType);
+		
+		insuranceSchemeRepository.save(insuranceScheme);
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully insurance scheme");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+		
+		
+		
+	}
+
+	@Override
+	public ResponseEntity<?> premiumPaymentDetails(PremiumPaymentDetailsDto premiumPaymentDetailsdto) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		
+		PremiumPaymentDetails premiumPaymentDetails = new PremiumPaymentDetails();
+		
+		premiumPaymentDetails.setAmount(premiumPaymentDetailsdto.getAmount());
+		premiumPaymentDetails.setPaymentDetails(premiumPaymentDetailsdto.getPaymentDetails());
+		premiumPaymentDetails.setStatus(premiumPaymentDetailsdto.getStatus());
+		premiumPaymentDetails.setType(premiumPaymentDetailsdto.getType());
+		
+		premiumPaymentDetailsRepository.save(premiumPaymentDetails);	
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully save paymet details");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
 
 }
