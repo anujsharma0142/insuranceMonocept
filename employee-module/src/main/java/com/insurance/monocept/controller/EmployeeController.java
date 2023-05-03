@@ -16,7 +16,7 @@ import com.insurance.monocept.dto.EmployeeDto;
 import com.insurance.monocept.service.EmployeeService;
 
 @RestController
-@RequestMapping("/api/vi/admin")
+@RequestMapping("/api/vi/employee")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class EmployeeController {
 
