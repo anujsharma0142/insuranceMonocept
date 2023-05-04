@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.insurance.monocept.dto.AdminDto;
@@ -80,6 +81,16 @@ public class AdminController {
 	@PostMapping("/premiumPaymentDetails")
 	public ResponseEntity<?> premiumPaymentDetails(@ModelAttribute PremiumPaymentDetailsDto premiumPaymentDetailsdto){
 		return adminService.premiumPaymentDetails(premiumPaymentDetailsdto);
+	}
+	
+	@GetMapping("/getUserDocuments")
+	public ResponseEntity<?> getUserDocuments(){
+		return adminService.getUserDocuments();
+	}
+	
+	@PutMapping("/approvedDocuments/{documentId}")
+	public ResponseEntity<?> approvedDocuments(@RequestParam boolean approved, @PathVariable("documentId") long documentId){
+		return adminService.approvedDocuments(approved, documentId);
 	}
 	
 	

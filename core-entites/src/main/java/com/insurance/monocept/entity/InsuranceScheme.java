@@ -27,8 +27,16 @@ public class InsuranceScheme {
 	
 	private String img;
 	
+	private double assuredAmount;
+	
 	@ManyToOne
 	private InsuranceType insuranceType; 
+	
+	private int duration;
+	
+	private int insuranceTax;
+	
+	private Long profitRatio;
 	
 	
 

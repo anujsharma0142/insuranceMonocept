@@ -33,4 +33,8 @@ public interface AdminService {
 
 	ResponseEntity<?> premiumPaymentDetails(PremiumPaymentDetailsDto premiumPaymentDetailsdto);
 
+	ResponseEntity<?> approvedDocuments(boolean approved, long documentId);
+
+	ResponseEntity<?> getUserDocuments();
+
 }

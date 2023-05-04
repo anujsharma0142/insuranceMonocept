@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class InsuranceSchemeDto  {
 	
-private Long id;
+	private Long id;
 	
 	private float commisionForInstallment;
 	
@@ -17,7 +17,15 @@ private Long id;
 	
 	private MultipartFile img;
 	
+	private double assuredAmount;
+	
 	private Long insuranceType; 
+	
+	private int duration;
+	
+	private int insuranceTax;
+	
+	private Long profitRatio;
 	
 	
 }

@@ -31,17 +31,21 @@ import com.insurance.monocept.dto.InsuranceTypeDto;
 import com.insurance.monocept.dto.PremiumPaymentDetailsDto;
 import com.insurance.monocept.dto.ResponseDto;
 import com.insurance.monocept.dto.SignUpResponseDto;
+import com.insurance.monocept.dto.UserUplaodDocumentsDto;
 import com.insurance.monocept.entity.InsuranceScheme;
 import com.insurance.monocept.entity.InsuranceType;
 import com.insurance.monocept.entity.PremiumPaymentDetails;
 import com.insurance.monocept.entity.User;
 import com.insurance.monocept.entity.UserRole;
+import com.insurance.monocept.entity.UserUploadDocuments;
 import com.insurance.monocept.enums.UserRoles;
+import com.insurance.monocept.repository.InsuranceRepository;
 import com.insurance.monocept.repository.InsuranceSchemeRepository;
 import com.insurance.monocept.repository.InsuranceTypeRepository;
 import com.insurance.monocept.repository.PremiumPaymentDetailsRepository;
 import com.insurance.monocept.repository.UserRepository;
 import com.insurance.monocept.repository.UserRoleRepository;
+import com.insurance.monocept.repository.UserUploadDocumentsRepository;
 import com.insurance.monocept.service.AdminService;
 import com.insurance.monocept.utility.AppUtility;
 import com.insurance.monocept.utility.TokenUtility;
@@ -70,6 +74,14 @@ public class AdminServiceImpl implements AdminService{
 	@Autowired
 	private PremiumPaymentDetailsRepository premiumPaymentDetailsRepository;
 	
+	@Autowired
+	private UserUploadDocumentsRepository userUploadDocumentsRepository;
+	
+	@Autowired
+	private InsuranceRepository insuranceRepository;
+	
+	@Autowired
+	private PremiumPaymentDetailsRepository paymentDetailsRepository;
 	
 	 private final Path root = Paths.get("./src/main/resources/templates/");
 	
@@ -448,14 +460,15 @@ User user = AppUtility.getCurrentUser();
 		
 		
 		InsuranceType insuranceType = insuranceTypeRepository.findById(insuranceSchemedto.getInsuranceType()).orElse(null);
-		
 		insuranceScheme.setCommisionForInstallment(insuranceSchemedto.getCommisionForInstallment());
-		
 		insuranceScheme.setCommisionForRegistration(insuranceSchemedto.getCommisionForRegistration());
-		
+		insuranceScheme.setDuration(insuranceSchemedto.getDuration());
+		insuranceScheme.setInsuranceTax(insuranceSchemedto.getInsuranceTax());
+		insuranceScheme.setProfitRatio(insuranceSchemedto.getProfitRatio());
+		insuranceScheme.setAssuredAmount(insuranceSchemedto.getAssuredAmount());
 		try {
-			String fileName = StringUtils.cleanPath(insuranceSchemedto.getImg() .getOriginalFilename());
-			byte[] bytes = insuranceScheme.getImg().getBytes();
+			String fileName = StringUtils.cleanPath(insuranceSchemedto.getImg().getOriginalFilename());
+			byte[] bytes = insuranceSchemedto.getImg().getBytes();
 			Path path = Paths.get("./src/main/resources/templates/" + fileName);
 	        Files.write(path, bytes);
 	        String imagePath = "http://localhost:8083/api/vi/admin/getImage/" +  fileName;
@@ -507,6 +520,83 @@ User user = AppUtility.getCurrentUser();
 		ResponseDto responseDTO = new ResponseDto();
 		responseDTO.setMessage("successfully save paymet details");
 		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> approvedDocuments(boolean approved, long documentId) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}	
+		UserUploadDocuments documents = userUploadDocumentsRepository.findById(documentId).orElse(null);
+		if(approved) {
+			documents.setStatus("APPROVED");
+			documents.getInsurance().setCompletedSteps("4");
+			documents.getInsurance().setActive(false);
+			insuranceRepository.save(documents.getInsurance());
+			PremiumPaymentDetails details = new PremiumPaymentDetails();
+			Double amount = (documents.getInsurance().getInsuranceScheme().getAssuredAmount() *10)/100;
+			details.setAmount(amount);	
+			details.setInsurance(documents.getInsurance());
+			details.setPaid(false);
+			details.setPaymentDetails("initial payment");
+			details.setStatus("pending");
+			details.setType("insurance_type");
+			paymentDetailsRepository.save(details);
+		}
+		else documents.setStatus("REJECTED");
+		documents.setApproved(approved);
+		userUploadDocumentsRepository.save(documents);
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully change status of documents");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> getUserDocuments() {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		List<UserUploadDocuments> documents = userUploadDocumentsRepository.findByStatus("PENDING");
+		List<UserUplaodDocumentsDto> documentsDtos = new ArrayList<>();
+		for(UserUploadDocuments doc : documents) {
+			UserUplaodDocumentsDto dto = new UserUplaodDocumentsDto();
+			dto.setAdhaarBack(doc.getAdhaarBack());
+			dto.setAdhaarFront(doc.getAdhaarFront());
+			dto.setApproved(doc.isApproved());
+			dto.setId(doc.getId());
+			dto.setPanCard(doc.getPanCard());
+			dto.setStatus(doc.getStatus());
+			documentsDtos.add(dto);
+		}
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully get documents");
+		responseDTO.setStatus("success");
+		responseDTO.setData(documentsDtos);
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 

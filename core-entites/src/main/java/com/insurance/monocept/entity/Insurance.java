@@ -22,16 +22,14 @@ public class Insurance extends BaseEntity {
 	private Long id;
 	
 	private String accNo;
+		
+	private boolean Active;
 	
-	private Long assuredAmount;
+	private String completedSteps;
 	
-	private String isActive;
+	private boolean completed;
 	
-	private String premiumType;
-	
-	private String premiumAmount;
-	
-	private Long profitRatio;
+	private String status;
 	
 	@ManyToOne
 	private User user;
@@ -39,10 +37,6 @@ public class Insurance extends BaseEntity {
 	@ManyToOne
 	private InsuranceScheme insuranceScheme;
 	
-	@ManyToOne
-	private PremiumPaymentDetails premiumPaymentDetails;
-	
-	private String insuranceTax;
 	
 	
 	

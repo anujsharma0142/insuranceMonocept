@@ -20,15 +20,17 @@ public class AgentController {
 	@Autowired
 	private AgentService agentService;
 	
-	@PostMapping("/addUser")
-	public ResponseEntity<?> addUser(@RequestBody AgentDto agentDto){
-		return agentService.addAgent(agentDto);
+	@PostMapping("/addCustomer")
+	public ResponseEntity<?> addCustomer(@RequestBody AgentDto agentDto){
+		return agentService.addCustomer(agentDto);
 	}
 	
 	@GetMapping("/getUserDetails")
 	public ResponseEntity<?> getUserDetails(){
 		return agentService.getUserDetails();
 	}
+	
+	
 	
 	
 }

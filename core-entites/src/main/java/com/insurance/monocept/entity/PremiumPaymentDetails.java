@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -21,10 +22,21 @@ public class PremiumPaymentDetails  extends BaseEntity{
 	private Long id;
 	
 	private double amount;
+	
 	private String paymentDetails;
+	
 	private String status;
 	
 	private String type;
+	
+	private Boolean paid;
+	
+	@ManyToOne
+	private Insurance insurance;
+	
+	
+	
+	
 	
 	
 }

@@ -6,7 +6,7 @@ import com.insurance.monocept.dto.AgentDto;
 
 public interface AgentService {
 
-	ResponseEntity<?> addAgent(AgentDto agentDto);
+	ResponseEntity<?> addCustomer(AgentDto agentDto);
 	
 	ResponseEntity<?> getUserDetails();
 

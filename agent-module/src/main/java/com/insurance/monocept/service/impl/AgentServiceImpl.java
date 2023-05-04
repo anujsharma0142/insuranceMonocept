@@ -62,7 +62,7 @@ public class AgentServiceImpl implements AgentService{
 
 
 	@Override
-	public ResponseEntity<?> addAgent(AgentDto agentDto) {
+	public ResponseEntity<?> addCustomer(AgentDto agentDto) {
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
@@ -98,6 +98,7 @@ public class AgentServiceImpl implements AgentService{
 		user1.setMobileNo(agentDto.getPhoneNo());
 		user1.setPassword(encoder.encode(agentDto.getPassword()));
 		user1.setRole(userRole);
+		user1.setUser(user);
 		user1.setQualification(agentDto.getQualification());
 		userRepository.save(user1);
 		user1.setLoginId("MONOINS" + user1.getId());

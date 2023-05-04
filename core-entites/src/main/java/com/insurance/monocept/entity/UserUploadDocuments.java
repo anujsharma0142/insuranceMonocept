@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -13,25 +13,27 @@ import lombok.Data;
 
 @Data
 @Entity
-public class UserDetails {
-	
+public class UserUploadDocuments {
+
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
 	private Long id;
 	
-	private String address;
-	
-	private String pincode;
-	
-	private String city;
-	
-	private String state;
-	
 	private String panCard;
 	
-	@ManyToOne
-	private User userId;
+	private String adhaarFront;
 	
+	private String adhaarBack;
+	
+	@OneToOne
+	private User user;
+	
+	private boolean approved;
+	
+	private String status;
+	
+	@OneToOne
+	private Insurance insurance;
 }
