@@ -5,15 +5,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 
-@Entity
 @Data
-public class Insurance extends BaseEntity {
+@Entity
+public class UserDetails {
 	
 	@Id
 	@Column(name = "id")
@@ -21,29 +20,28 @@ public class Insurance extends BaseEntity {
 	@GenericGenerator(name = "native", strategy = "native")
 	private Long id;
 	
-	private String accNo;
+	private String address;
 	
-	private Long assuredAmount;
+	private String pincode;
 	
-	private String isActive;
+	private String city;
 	
-	private String premiumType;
+	private String state;
 	
-	private String premiumAmount;
+	private User userId;
 	
-	private Long profitRatio;
+	private String documentId;
 	
-	@ManyToOne
-	private User user;
+	private String documentType;
 	
-	@ManyToOne
-	private InsuranceScheme insuranceScheme;
+	private String status;
 	
-	@ManyToOne
-	private PremiumPaymentDetails premiumPaymentDetails;
+	private String fileData;
 	
-	private String insuranceTax;
+	private String documentName;
 	
 	
 	
+	
+
 }

@@ -9,29 +9,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.insurance.monocept.dto.UserSignUpDto;
-import com.insurance.monocept.service.UserService;
+import com.insurance.monocept.dto.AgentDto;
+import com.insurance.monocept.service.AgentService;
 
 @RequestMapping("/api/v1/user")
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class UserController {
-
+public class AgentController {
+	
 	@Autowired
-	private UserService userService;
+	private AgentService agentService;
 	
-	@PostMapping("/signup")
-	public ResponseEntity<?> signUp(@RequestBody UserSignUpDto signUpDto){
-		return userService.signUp(signUpDto);
-	}
-	
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody UserSignUpDto signUpDto){
-		return userService.login(signUpDto);
+	@PostMapping("/addUser")
+	public ResponseEntity<?> addUser(@RequestBody AgentDto agentDto){
+		return agentService.addAgent(agentDto);
 	}
 	
 	@GetMapping("/getUserDetails")
 	public ResponseEntity<?> getUserDetails(){
-		return userService.getUserDetails();
+		return agentService.getUserDetails();
 	}
+	
+	
 }

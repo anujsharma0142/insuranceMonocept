@@ -11,39 +11,23 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 
-@Entity
 @Data
-public class Insurance extends BaseEntity {
-	
+@Entity
+public class Transaction {
+
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
 	private Long id;
 	
-	private String accNo;
-	
-	private Long assuredAmount;
-	
-	private String isActive;
-	
-	private String premiumType;
-	
-	private String premiumAmount;
-	
-	private Long profitRatio;
-	
 	@ManyToOne
-	private User user;
+	private User userId;
 	
-	@ManyToOne
-	private InsuranceScheme insuranceScheme;
+	private float amount;
 	
-	@ManyToOne
-	private PremiumPaymentDetails premiumPaymentDetails;
+	private String time;
 	
-	private String insuranceTax;
-	
-	
+	private String date;
 	
 }
