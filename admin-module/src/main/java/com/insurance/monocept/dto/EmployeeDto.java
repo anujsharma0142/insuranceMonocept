@@ -11,7 +11,7 @@ public class EmployeeDto {
 	
 	private String firstName;
 	
-	private String lasttName;
+	private String lastName;
 	
 	private String password;
 	

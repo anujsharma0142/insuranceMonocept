@@ -68,7 +68,7 @@ public class JWTParser {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			}
 		} catch (Exception e) {
-			//System.out.println(e.getMessage());
+			System.out.println(e.getMessage());
 			throw new AuthenticationServiceException(MessageFormat.format("Error | {0}", "Bad Token"));
 		}
 

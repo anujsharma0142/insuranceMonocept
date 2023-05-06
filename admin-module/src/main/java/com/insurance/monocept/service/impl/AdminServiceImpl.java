@@ -117,7 +117,7 @@ public class AdminServiceImpl implements AdminService{
 		employee.setEmail(employeeDto.getEmail());
 		employee.setEmailVerified(true);
 		employee.setFirstName(employeeDto.getFirstName());
-		employee.setLastName(employeeDto.getLasttName());
+		employee.setLastName(employeeDto.getLastName());
 		employee.setMobileNo(employeeDto.getPhoneNo());
 		employee.setPassword(encoder.encode(employeeDto.getPassword()));
 		employee.setLoginAllowed(true);
@@ -161,13 +161,13 @@ public class AdminServiceImpl implements AdminService{
 		}
 		
 		UserRole userRole = userRoleRepository.findByType(UserRoles.AGENT.getRole());
-		
+		System.out.println(agentDto.toString());
 		agent = new User();
 		agent.setEmail(agentDto.getEmail());
 		agent.setEmailVerified(true);
 		agent.setFirstName(agentDto.getFirstName());
 		agent.setLoginAllowed(true);
-		agent.setLastName(agentDto.getLasttName());
+		agent.setLastName(agentDto.getLastName());
 		agent.setMobileNo(agentDto.getPhoneNo());
 		agent.setPassword(encoder.encode(agentDto.getPassword()));
 		agent.setRole(userRole);
@@ -266,7 +266,7 @@ public class AdminServiceImpl implements AdminService{
 		employee.setEmail(employeeDto.getEmail());
 		employee.setFirstName(employeeDto.getFirstName());
 		employee.setIsLoginAllowed(employeeDto.isLoginAllowed());
-		employee.setLastName(employeeDto.getLasttName());
+		employee.setLastName(employeeDto.getLastName());
 		employee.setMobileNo(employeeDto.getPhoneNo());
 		employee.setPassword(encoder.encode(employeeDto.getPassword()));
 		employee.setQualification(employeeDto.getQalification());
@@ -308,7 +308,7 @@ User user = AppUtility.getCurrentUser();
 		employee.setEmail(employeeDto.getEmail());
 		employee.setFirstName(employeeDto.getFirstName());
 		employee.setIsLoginAllowed(employeeDto.isLoginAllowed());
-		employee.setLastName(employeeDto.getLasttName());
+		employee.setLastName(employeeDto.getLastName());
 		employee.setMobileNo(employeeDto.getPhoneNo());
 		employee.setPassword(encoder.encode(employeeDto.getPassword()));
 		employee.setQualification(employeeDto.getQalification());

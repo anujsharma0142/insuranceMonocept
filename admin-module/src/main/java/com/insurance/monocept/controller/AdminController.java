@@ -21,7 +21,7 @@ import com.insurance.monocept.dto.PremiumPaymentDetailsDto;
 import com.insurance.monocept.service.AdminService;
 
 @RestController
-@RequestMapping("/api/vi/admin")
+@RequestMapping("/api/v1/admin")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AdminController {
 
