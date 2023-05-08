@@ -31,7 +31,13 @@ public class UserDetails {
 	
 	private String panCard;
 	
+	private String nomineeNo;
+	
+	private String nomineeRelation;
+	
+	private String nomineeName;
+	
 	@ManyToOne
-	private User userId;
+	private User user;
 	
 }

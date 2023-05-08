@@ -53,7 +53,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/api/v1/user/signup", "/api/v1/user/login", "/swagger-ui/**", "/api/vi/admin/getImage/{fileName}",
+		web.ignoring().antMatchers("/api/v1/user/signup", "/api/v1/user/login", "/swagger-ui/**", "/api/v1/admin/getImage/{fileName}",
 				"/rpg-socket/**", "/topic/greetings", "/app/hello", "/user/signup","/user/login", "/verify/**",
 				"/v2/api-docs", "/v3/api-docs", "/configuration/ui", "/swagger-resources/**","/api/vi/admin/signupAdmin");
 	}

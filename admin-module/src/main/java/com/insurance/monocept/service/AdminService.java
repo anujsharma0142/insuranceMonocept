@@ -37,4 +37,18 @@ public interface AdminService {
 
 	ResponseEntity<?> getUserDocuments();
 
+	ResponseEntity<?> changePassword(String password, long id);
+
+	ResponseEntity<?> getInsuranceType();
+
+	ResponseEntity<?> updateInsuranceType(InsuranceTypeDto insuranceTypeDto);
+
+	ResponseEntity<?> getAllInsuranceScheme();
+
+	ResponseEntity<?> updateInsuranceScheme(InsuranceSchemeDto insuranceSchemeDto);
+
+	ResponseEntity<?> getAllCustomers(Integer pageNo);
+
+	ResponseEntity<?> changePasswordForAdmin(String password);
+
 }

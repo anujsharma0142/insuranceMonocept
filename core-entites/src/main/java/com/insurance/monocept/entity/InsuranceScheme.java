@@ -21,6 +21,8 @@ public class InsuranceScheme {
 	@GenericGenerator(name = "native", strategy = "native")
 	private Long id;
 	
+	private String name;
+	
 	private float commisionForInstallment;
 	
 	private float commisionForRegistration;
@@ -28,6 +30,8 @@ public class InsuranceScheme {
 	private String img;
 	
 	private double assuredAmount;
+	
+	private String status;
 	
 	@ManyToOne
 	private InsuranceType insuranceType; 

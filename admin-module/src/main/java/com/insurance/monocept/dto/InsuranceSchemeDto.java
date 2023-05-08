@@ -9,11 +9,11 @@ import lombok.Data;
 @Data
 public class InsuranceSchemeDto  {
 	
-	private Long id;
+	private long id;
 	
-	private float commisionForInstallment;
+	private float commissionForInstallment;
 	
-	private float commisionForRegistration;
+	private float commissionForRegistration;
 	
 	private MultipartFile img;
 	
@@ -25,7 +25,11 @@ public class InsuranceSchemeDto  {
 	
 	private int insuranceTax;
 	
+	private String name;
+	
 	private Long profitRatio;
+	
+	private String status;
 	
 	
 }

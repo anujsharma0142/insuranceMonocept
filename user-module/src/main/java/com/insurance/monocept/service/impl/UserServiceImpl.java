@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -155,9 +157,11 @@ public class UserServiceImpl implements UserService{
 		userRepository.save(user);
 		if (encoder.matches(signUpDto.getPassword(), user.getPassword())) {
 			String jwtToken = TokenUtility.createJWT(user, app_secret, "apiToken", new ArrayList<>());
-			
+			Map<String, Object> map = new HashMap<>();
+			map.put("jwtToken", jwtToken);
+			map.put("role", user.getRole());
 			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setData(jwtToken);
+			responseDTO.setData(map);
 			responseDTO.setMessage("User login successfully");
 			responseDTO.setStatus("success");
 			return new ResponseEntity<>(responseDTO, HttpStatus.OK);

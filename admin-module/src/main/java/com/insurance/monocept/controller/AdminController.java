@@ -93,5 +93,39 @@ public class AdminController {
 		return adminService.approvedDocuments(approved, documentId);
 	}
 	
+	@PutMapping("/changePassword/{id}")
+	public ResponseEntity<?> changePassword(@RequestParam("password") String password, @PathVariable("id") long id){
+		return adminService.changePassword(password, id);
+	}
+	
+	@PutMapping("/changePasswordForAdmin")
+	public ResponseEntity<?> changePasswordForAdmin(@RequestParam("password") String password){
+		return adminService.changePasswordForAdmin(password);
+	}
+	
+	@GetMapping("/getInsuranceType")
+	public ResponseEntity<?> getInsuranceType(){
+		return adminService.getInsuranceType( );
+	}
+	
+	@GetMapping("/getAllInsuranceScheme")
+	public ResponseEntity<?> getAllInsuranceScheme(){
+		return adminService.getAllInsuranceScheme( );
+	}
+	
+	@PutMapping("/updateInsuranceType")
+	public ResponseEntity<?> updateInsuranceType(@ModelAttribute InsuranceTypeDto insuranceTypeDto){
+		return adminService.updateInsuranceType(insuranceTypeDto);
+	}
+	
+	@PutMapping("/updateInsuranceScheme")
+	public ResponseEntity<?> updateInsuranceScheme(@ModelAttribute InsuranceSchemeDto insuranceSchemeDto){
+		return adminService.updateInsuranceScheme(insuranceSchemeDto);
+	}
+	
+	@GetMapping("/getAllCustomers/{pageNo}")
+	public ResponseEntity<?> getAllCustomers(@PathVariable Integer pageNo){
+		return adminService.getAllCustomers( pageNo);
+	}
 	
 }

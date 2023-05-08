@@ -118,11 +118,11 @@ public class AdminServiceImpl implements AdminService{
 		employee.setEmailVerified(true);
 		employee.setFirstName(employeeDto.getFirstName());
 		employee.setLastName(employeeDto.getLastName());
-		employee.setMobileNo(employeeDto.getPhoneNo());
+		employee.setMobileNo(employeeDto.getMobileNo());
 		employee.setPassword(encoder.encode(employeeDto.getPassword()));
 		employee.setLoginAllowed(true);
 		employee.setRole(userRole);
-		employee.setQualification(employeeDto.getQalification());
+		employee.setQualification(employeeDto.getQualification());
 		userRepository.save(employee);
 		employee.setLoginId("MONOINS" + employee.getId());
 		userRepository.save(employee);
@@ -168,10 +168,10 @@ public class AdminServiceImpl implements AdminService{
 		agent.setFirstName(agentDto.getFirstName());
 		agent.setLoginAllowed(true);
 		agent.setLastName(agentDto.getLastName());
-		agent.setMobileNo(agentDto.getPhoneNo());
+		agent.setMobileNo(agentDto.getMobileNo());
 		agent.setPassword(encoder.encode(agentDto.getPassword()));
 		agent.setRole(userRole);
-		agent.setQualification(agentDto.getQalification());
+		agent.setQualification(agentDto.getQualification());
 		userRepository.save(agent);
 		agent.setLoginId("MONOINS" + agent.getId());
 		userRepository.save(agent);
@@ -199,7 +199,7 @@ public class AdminServiceImpl implements AdminService{
 			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		UserRole userRole = userRoleRepository.findByType(UserRoles.AGENT.getRole());
-		Pageable pageable = PageRequest.of(pageNo, 20);
+		Pageable pageable = PageRequest.of(pageNo, 10);
 		List<User> agents = userRepository.findByRole(userRole, pageable);
 		
 		ResponseDto responseDTO = new ResponseDto();
@@ -226,7 +226,7 @@ public class AdminServiceImpl implements AdminService{
 			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		UserRole userRole = userRoleRepository.findByType(UserRoles.EMPLOYEE.getRole());
-		Pageable pageable = PageRequest.of(pageNo, 20);
+		Pageable pageable = PageRequest.of(pageNo, 10);
 		List<User> employee = userRepository.findByRole(userRole, pageable);
 		
 		ResponseDto responseDTO = new ResponseDto();
@@ -253,7 +253,7 @@ public class AdminServiceImpl implements AdminService{
 			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
-		User employee = userRepository.findByEmail(employeeDto.getEmail());
+		User employee = userRepository.findById(employeeDto.getId()).orElse(null);
 		
 		if(employee == null) {
 			ResponseDto responseDTO = new ResponseDto();
@@ -267,9 +267,10 @@ public class AdminServiceImpl implements AdminService{
 		employee.setFirstName(employeeDto.getFirstName());
 		employee.setIsLoginAllowed(employeeDto.isLoginAllowed());
 		employee.setLastName(employeeDto.getLastName());
-		employee.setMobileNo(employeeDto.getPhoneNo());
+		employee.setMobileNo(employeeDto.getMobileNo());
 		employee.setPassword(encoder.encode(employeeDto.getPassword()));
-		employee.setQualification(employeeDto.getQalification());
+		employee.setQualification(employeeDto.getQualification());
+		employee.setLoginAllowed(employeeDto.isLoginAllowed());		
 		userRepository.save(employee);
 		
 		ResponseDto responseDTO = new ResponseDto();
@@ -295,7 +296,7 @@ User user = AppUtility.getCurrentUser();
 			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
-		User employee = userRepository.findByEmail(employeeDto.getEmail());
+		User employee = userRepository.findById(employeeDto.getId()).orElse(null);
 		
 		if(employee == null) {
 			ResponseDto responseDTO = new ResponseDto();
@@ -309,9 +310,10 @@ User user = AppUtility.getCurrentUser();
 		employee.setFirstName(employeeDto.getFirstName());
 		employee.setIsLoginAllowed(employeeDto.isLoginAllowed());
 		employee.setLastName(employeeDto.getLastName());
-		employee.setMobileNo(employeeDto.getPhoneNo());
+		employee.setMobileNo(employeeDto.getMobileNo());
 		employee.setPassword(encoder.encode(employeeDto.getPassword()));
-		employee.setQualification(employeeDto.getQalification());
+		employee.setQualification(employeeDto.getQualification());
+		employee.setLoginAllowed(employeeDto.isLoginAllowed());
 		userRepository.save(employee);
 		
 		ResponseDto responseDTO = new ResponseDto();
@@ -397,7 +399,7 @@ User user = AppUtility.getCurrentUser();
 			byte[] bytes = insurancedto.getImage().getBytes();
 			Path path = Paths.get("./src/main/resources/templates/" + fileName);
 	        Files.write(path, bytes);
-	        String imagePath = "http://localhost:8083/api/vi/admin/getImage/" +  fileName;
+	        String imagePath = "http://localhost:8083/api/v1/admin/getImage/" +  fileName;
 	        insurancetype.setImgPath(imagePath);
 	      
 		} catch (IllegalStateException | IOException  e) {
@@ -460,18 +462,20 @@ User user = AppUtility.getCurrentUser();
 		
 		
 		InsuranceType insuranceType = insuranceTypeRepository.findById(insuranceSchemedto.getInsuranceType()).orElse(null);
-		insuranceScheme.setCommisionForInstallment(insuranceSchemedto.getCommisionForInstallment());
-		insuranceScheme.setCommisionForRegistration(insuranceSchemedto.getCommisionForRegistration());
+		insuranceScheme.setCommisionForInstallment(insuranceSchemedto.getCommissionForInstallment());
+		insuranceScheme.setCommisionForRegistration(insuranceSchemedto.getCommissionForRegistration());
 		insuranceScheme.setDuration(insuranceSchemedto.getDuration());
 		insuranceScheme.setInsuranceTax(insuranceSchemedto.getInsuranceTax());
 		insuranceScheme.setProfitRatio(insuranceSchemedto.getProfitRatio());
 		insuranceScheme.setAssuredAmount(insuranceSchemedto.getAssuredAmount());
+		insuranceScheme.setName(insuranceSchemedto.getName());
+		insuranceScheme.setStatus("active");
 		try {
 			String fileName = StringUtils.cleanPath(insuranceSchemedto.getImg().getOriginalFilename());
 			byte[] bytes = insuranceSchemedto.getImg().getBytes();
 			Path path = Paths.get("./src/main/resources/templates/" + fileName);
 	        Files.write(path, bytes);
-	        String imagePath = "http://localhost:8083/api/vi/admin/getImage/" +  fileName;
+	        String imagePath = "http://localhost:8083/api/v1/admin/getImage/" +  fileName;
 	        insuranceScheme.setImg(imagePath);
 	      
 		} catch (IllegalStateException | IOException  e) {
@@ -597,6 +601,243 @@ User user = AppUtility.getCurrentUser();
 		responseDTO.setMessage("successfully get documents");
 		responseDTO.setStatus("success");
 		responseDTO.setData(documentsDtos);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> changePassword(String password, long id) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		User userChangePassword = userRepository.findById(id).orElse(null);
+		if(userChangePassword ==  null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+		}
+		userChangePassword.setPassword(encoder.encode(password));
+		userRepository.save(userChangePassword);
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully change password");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> getInsuranceType() {
+		User user = AppUtility.getCurrentUser();
+		
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		
+		List<InsuranceType> list = insuranceTypeRepository.findAll();
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setData(list);
+		responseDTO.setMessage("successfully get insurance type");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+		
+	}
+
+	@Override
+	public ResponseEntity<?> updateInsuranceType(InsuranceTypeDto insuranceTypeDto) {
+		User user = AppUtility.getCurrentUser();
+		
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		System.out.println(insuranceTypeDto.toString());
+		InsuranceType  insuranceType = insuranceTypeRepository.findById(insuranceTypeDto.getId()).orElse(null);
+		
+		insuranceType.setName(insuranceTypeDto.getName());
+		
+		if(insuranceTypeDto.getImage()!= null) {
+			try {
+				String fileName = StringUtils.cleanPath(insuranceTypeDto.getImage().getOriginalFilename());
+				byte[] bytes = insuranceTypeDto.getImage().getBytes();
+				Path path = Paths.get("./src/main/resources/templates/" + fileName);
+		        Files.write(path, bytes);
+		        String imagePath = "http://localhost:8083/api/v1/admin/getImage/" +  fileName;
+		        insuranceType.setImgPath(imagePath);
+		      
+			} catch (IllegalStateException | IOException  e) {
+				e.printStackTrace();
+			}
+			
+		}
+		insuranceType.setActive(insuranceTypeDto.isActive());
+		insuranceTypeRepository.save(insuranceType);
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully update insurance type");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> getAllInsuranceScheme() {
+		User user = AppUtility.getCurrentUser();
+		
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		List<InsuranceScheme> insuranceSchemes = insuranceSchemeRepository.findAll();
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully get insurance schemes");
+		responseDTO.setStatus("success");
+		responseDTO.setData(insuranceSchemes);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> updateInsuranceScheme(InsuranceSchemeDto insuranceSchemeDto) {
+		User user = AppUtility.getCurrentUser();
+		
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		InsuranceScheme insuranceScheme = insuranceSchemeRepository.findById(insuranceSchemeDto.getId()).orElse(null);
+		System.out.println(insuranceSchemeDto.getInsuranceType());
+		if(insuranceSchemeDto.getInsuranceType() != null && !insuranceSchemeDto.getInsuranceType().equals("")) {
+			InsuranceType insuranceType = insuranceTypeRepository.findById(insuranceSchemeDto.getInsuranceType()).orElse(null);
+			insuranceScheme.setInsuranceType(insuranceType);
+		}
+		insuranceScheme.setCommisionForInstallment(insuranceSchemeDto.getCommissionForInstallment());
+		insuranceScheme.setCommisionForRegistration(insuranceSchemeDto.getCommissionForRegistration());
+		insuranceScheme.setDuration(insuranceSchemeDto.getDuration());
+		insuranceScheme.setInsuranceTax(insuranceSchemeDto.getInsuranceTax());
+		insuranceScheme.setProfitRatio(insuranceSchemeDto.getProfitRatio());
+		insuranceScheme.setAssuredAmount(insuranceSchemeDto.getAssuredAmount());
+		insuranceScheme.setName(insuranceSchemeDto.getName());
+		insuranceScheme.setStatus(insuranceSchemeDto.getStatus());
+		if(insuranceSchemeDto.getImg() != null) {
+			try {
+				String fileName = StringUtils.cleanPath(insuranceSchemeDto.getImg().getOriginalFilename());
+				byte[] bytes = insuranceSchemeDto.getImg().getBytes();
+				Path path = Paths.get("./src/main/resources/templates/" + fileName);
+		        Files.write(path, bytes);
+		        String imagePath = "http://localhost:8083/api/v1/admin/getImage/" +  fileName;
+		        insuranceScheme.setImg(imagePath);
+		      
+			} catch (IllegalStateException | IOException  e) {
+				e.printStackTrace();
+			}
+		}
+		
+		insuranceSchemeRepository.save(insuranceScheme);
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("successfully update insurance schemes");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> getAllCustomers(Integer pageNo) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		
+		UserRole userRole = userRoleRepository.findByType(UserRoles.USER.getRole());
+		
+		Pageable pageable = PageRequest.of(pageNo, 10);
+		
+		List<User> customer = userRepository.findByRole(userRole, pageable);
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("Successfully get All Customers.");
+		responseDTO.setStatus("success");
+		responseDTO.setData(customer);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> changePasswordForAdmin(String password) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		user.setPassword(encoder.encode(password));
+		userRepository.save(user);
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("Successfully change password.");
+		responseDTO.setStatus("success");
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
