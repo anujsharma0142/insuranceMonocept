@@ -128,4 +128,16 @@ public class AdminController {
 		return adminService.getAllCustomers( pageNo);
 	}
 	
+	@GetMapping("/getUploadedDcuments/{pageNo}")
+	public ResponseEntity<?> getUploadedDcumentts(@RequestParam("type") String type, @PathVariable Integer pageNo){
+		return adminService.getUploadedDcumentts(type, pageNo);
+	}
+	
+	@GetMapping("/sendMail/{email}")
+	public ResponseEntity<?> sendMail(@PathVariable String email){
+		return adminService.sendMail(email);
+	}
+	
+	
+	
 }

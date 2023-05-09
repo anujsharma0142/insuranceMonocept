@@ -12,7 +12,7 @@ public interface AgentService {
 
 	ResponseEntity<?> addCustomer(AgentDto agentDto);
 	
-	ResponseEntity<?> getUserDetails();
+	ResponseEntity<?> getUserDetails(String email);
 
 	ResponseEntity<?> getAllAddedUser(Integer pageNo);
 
@@ -27,6 +27,8 @@ public interface AgentService {
 	ResponseEntity<?> getAllInsuranceScheme();
 
 	ResponseEntity<?> getInsuranceByUser(Long userId);
+
+	ResponseEntity<?> getInsuranceByUser(String email);
 
 	
 	

@@ -51,4 +51,8 @@ public interface AdminService {
 
 	ResponseEntity<?> changePasswordForAdmin(String password);
 
+	ResponseEntity<?> getUploadedDcumentts(String type, Integer pageNo);
+
+	ResponseEntity<?> sendMail(String email);
+
 }

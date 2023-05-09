@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,8 +39,8 @@ public class AgentController {
 	}
 	
 	@GetMapping("/getUserDetails")
-	public ResponseEntity<?> getUserDetails(){
-		return agentService.getUserDetails();
+	public ResponseEntity<?> getUserDetails(@RequestParam String email){
+		return agentService.getUserDetails(email);
 	}
 	
 	@PutMapping("/updateCustomer")
@@ -71,6 +72,11 @@ public class AgentController {
 	@GetMapping("/getInsuranceByUser/{userId}")
 	public ResponseEntity<?> getInsuranceByUser(@PathVariable Long userId){
 		return agentService.getInsuranceByUser(userId);
+	}
+	
+	@GetMapping("/getInsuranceByUserEmail/{email}")
+	public ResponseEntity<?> getInsuranceByUser(@PathVariable String email){
+		return agentService.getInsuranceByUser(email);
 	}
 	
 	

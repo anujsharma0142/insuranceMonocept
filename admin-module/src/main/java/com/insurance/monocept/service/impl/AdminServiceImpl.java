@@ -48,6 +48,7 @@ import com.insurance.monocept.repository.UserRoleRepository;
 import com.insurance.monocept.repository.UserUploadDocumentsRepository;
 import com.insurance.monocept.service.AdminService;
 import com.insurance.monocept.utility.AppUtility;
+import com.insurance.monocept.utility.MailUtility;
 import com.insurance.monocept.utility.TokenUtility;
 
 @Service
@@ -82,6 +83,9 @@ public class AdminServiceImpl implements AdminService{
 	
 	@Autowired
 	private PremiumPaymentDetailsRepository paymentDetailsRepository;
+	
+	@Autowired
+	private MailUtility mailUtility;
 	
 	 private final Path root = Paths.get("./src/main/resources/templates/");
 	
@@ -841,4 +845,39 @@ User user = AppUtility.getCurrentUser();
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
+	@Override
+	public ResponseEntity<?> getUploadedDcumentts(String type, Integer pageNo) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Admin credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		Pageable pageable = PageRequest.of(pageNo, 10);
+		List<UserUploadDocuments> userUploadDocuments = userUploadDocumentsRepository.findByStatus(type, pageable);
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("Successfully get doocuments.");
+		responseDTO.setStatus("success");
+		responseDTO.setData(userUploadDocuments);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> sendMail(String email) {
+		mailUtility.sendSimpleMail(email,"hello", "subject");
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("Successfully send email.");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	
 }

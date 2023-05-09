@@ -76,7 +76,7 @@ public class AgentServiceImpl implements AgentService{
 	
 	
 	@Override
-	public ResponseEntity<?> getUserDetails() {
+	public ResponseEntity<?> getUserDetails(String email) {
 		User user = AppUtility.getCurrentUser();
 		if(user == null) {
 			ResponseDto responseDTO = new ResponseDto();
@@ -85,8 +85,11 @@ public class AgentServiceImpl implements AgentService{
 			responseDTO.setStatus("fail");
 			return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
 		}
+		User customer = userRepository.findByEmail(email);
+		UserDetails details = userDetailsRepository.findByUser(customer); 
+		System.out.println(details);
 		ResponseDto responseDTO = new ResponseDto();
-		responseDTO.setData(user);
+		responseDTO.setData(details);
 		responseDTO.setMessage("get user details successfully");
 		responseDTO.setStatus("Success");
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
@@ -220,7 +223,11 @@ public class AgentServiceImpl implements AgentService{
 		User customer = userRepository.findByEmail(insuranceDto.getEmail());
 		InsuranceScheme insuranceScheme = insuranceSchemeRepository.findById(insuranceDto.getInsuranceSchemeId()).orElse(null);
 		
-		Insurance insurance = new Insurance();
+		Insurance insurance = insuranceRepository.findByUserAndConpleted(customer.getId());
+		if(insurance != null) {
+			insuranceRepository.delete(insurance);
+		}
+		insurance = new Insurance();
 		insurance.setInsuranceScheme(insuranceScheme);
 		insurance.setUser(customer);
 		insurance.setCompleted(false);
@@ -260,13 +267,16 @@ public class AgentServiceImpl implements AgentService{
 		System.out.println(adhaarBack.getOriginalFilename());
 		System.out.println();
 		Insurance insurance = insuranceRepository.findById(insuranceId).orElse(null);
-		UserUploadDocuments documents = new UserUploadDocuments();
+		UserUploadDocuments documents = userUploadDocumentsRepository.findByUserAndInsurance(insurance.getUser(),insurance);
+		if(documents == null) {
+			documents = new UserUploadDocuments();
+		
 				try {
 					String fileName = StringUtils.cleanPath(panCard.getOriginalFilename());
 					byte[] bytes = panCard.getBytes();
 					Path path = Paths.get("./src/main/resources/templates/" + fileName);
 			        Files.write(path, bytes);
-			        String imagePath = "http://localhost:8083/api/vi/admin/getImage/" +  fileName;
+			        String imagePath = "http://localhost:8083/api/v1/admin/getImage/" +  fileName;
 			        documents.setPanCard(imagePath);			      
 				} catch (IllegalStateException | IOException  e) {
 					e.printStackTrace();
@@ -276,7 +286,7 @@ public class AgentServiceImpl implements AgentService{
 					byte[] bytes = adhaarFront.getBytes();
 					Path path = Paths.get("./src/main/resources/templates/" + fileName);
 			        Files.write(path, bytes);
-			        String imagePath = "http://localhost:8083/api/vi/admin/getImage/" +  fileName;
+			        String imagePath = "http://localhost:8083/api/v1/admin/getImage/" +  fileName;
 			        documents.setAdhaarFront(imagePath);			      
 				} catch (IllegalStateException | IOException  e) {
 					e.printStackTrace();
@@ -286,17 +296,18 @@ public class AgentServiceImpl implements AgentService{
 					byte[] bytes = adhaarBack.getBytes();
 					Path path = Paths.get("./src/main/resources/templates/" + fileName);
 			        Files.write(path, bytes);
-			        String imagePath = "http://localhost:8083/api/vi/admin/getImage/" +  fileName;
+			        String imagePath = "http://localhost:8083/api/v1/admin/getImage/" +  fileName;
 			        documents.setAdhaarBack(imagePath);			      
 				} catch (IllegalStateException | IOException  e) {
 					e.printStackTrace();
 				}
-		documents.setInsurance(insurance);
-		documents.setUser(user);
-		documents.setStatus("PENDING");
-		userUploadDocumentsRepository.save(documents);	
-		insurance.setCompletedSteps("3");
-		insuranceRepository.save(insurance);
+				documents.setInsurance(insurance);
+				documents.setUser(insurance.getUser());
+				documents.setStatus("PENDING");
+				userUploadDocumentsRepository.save(documents);	
+				insurance.setCompletedSteps("3");
+				insuranceRepository.save(insurance);
+		}
 		ResponseDto responseDTO = new ResponseDto();
 		responseDTO.setMessage("successfully add documents");
 		responseDTO.setStatus("success");
@@ -391,6 +402,38 @@ public class AgentServiceImpl implements AgentService{
 			
 			
 			User customer = userRepository.findById(userId).orElseGet(null);
+			
+			Insurance insurance = insuranceRepository.findByUserAndConpleted(customer.getId());
+			
+			ResponseDto responseDTO = new ResponseDto();
+			
+			responseDTO.setMessage("successfully get insurance schemes");
+			responseDTO.setStatus("success");
+			responseDTO.setData(insurance);
+			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+
+	@Override
+	public ResponseEntity<?> getInsuranceByUser(String email) {
+		User user = AppUtility.getCurrentUser();
+		
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.getRole().getType().equals("ROLE_AGENT")) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("Agent credentials invalid.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+			
+			
+			User customer = userRepository.findByEmail(email);
 			
 			Insurance insurance = insuranceRepository.findByUserAndConpleted(customer.getId());
 			
