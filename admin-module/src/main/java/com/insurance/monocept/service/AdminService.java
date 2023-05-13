@@ -1,6 +1,5 @@
 package com.insurance.monocept.service;
 
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import com.insurance.monocept.dto.AdminDto;

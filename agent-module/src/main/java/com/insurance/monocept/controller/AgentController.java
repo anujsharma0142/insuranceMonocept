@@ -79,6 +79,10 @@ public class AgentController {
 		return agentService.getInsuranceByUser(email);
 	}
 	
+	@PostMapping("/sendMail")
+	public ResponseEntity<?> sendMail(@RequestParam String email, @RequestParam String subject, @RequestParam String description){
+		return agentService.sendMail(email, subject, description);
+	}
 	
 	
 }

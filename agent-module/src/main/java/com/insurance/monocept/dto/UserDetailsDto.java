@@ -19,6 +19,8 @@ public class UserDetailsDto {
 	
 	private String state;
 	
+	private String dob;
+	
 	private String nomineeNo;
 	
 	private String nomineeRelation;

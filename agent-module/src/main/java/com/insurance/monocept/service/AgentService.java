@@ -30,6 +30,8 @@ public interface AgentService {
 
 	ResponseEntity<?> getInsuranceByUser(String email);
 
+	ResponseEntity<?> sendMail(String email, String subject, String desription);
+
 	
 	
 

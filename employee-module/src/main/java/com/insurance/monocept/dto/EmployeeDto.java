@@ -11,13 +11,13 @@ public class EmployeeDto {
 	
 	private String firstName;
 	
-	private String lasttName;
+	private String lastName;
 	
 	private String password;
 	
 	private boolean loginAllowed;
 	
-	private String phoneNo;
+	private String mobileNo;
 	
-	private String qalification;
+	private String qualification;
 }

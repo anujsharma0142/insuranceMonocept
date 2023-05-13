@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +31,7 @@ import com.insurance.monocept.dto.UserSignUpDto;
 import com.insurance.monocept.entity.Insurance;
 import com.insurance.monocept.entity.InsuranceScheme;
 import com.insurance.monocept.entity.InsuranceType;
+import com.insurance.monocept.entity.PremiumPaymentDetails;
 import com.insurance.monocept.entity.User;
 import com.insurance.monocept.entity.UserDetails;
 import com.insurance.monocept.entity.UserRole;
@@ -37,6 +39,7 @@ import com.insurance.monocept.entity.UserUploadDocuments;
 import com.insurance.monocept.enums.UserRoles;
 import com.insurance.monocept.repository.InsuranceRepository;
 import com.insurance.monocept.repository.InsuranceSchemeRepository;
+import com.insurance.monocept.repository.PremiumPaymentDetailsRepository;
 import com.insurance.monocept.repository.UserDetailsRepository;
 import com.insurance.monocept.repository.UserRepository;
 import com.insurance.monocept.repository.UserRoleRepository;
@@ -71,6 +74,9 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private UserUploadDocumentsRepository userUploadDocumentsRepository;
+	
+	@Autowired
+	private PremiumPaymentDetailsRepository paymentDetailsRepository;
 	
 	@Override
 	public ResponseEntity<?> signUp(UserSignUpDto signUpDto) {
@@ -158,6 +164,7 @@ public class UserServiceImpl implements UserService{
 		if (encoder.matches(signUpDto.getPassword(), user.getPassword())) {
 			String jwtToken = TokenUtility.createJWT(user, app_secret, "apiToken", new ArrayList<>());
 			Map<String, Object> map = new HashMap<>();
+			map.put("name", user.getFirstName());
 			map.put("jwtToken", jwtToken);
 			map.put("role", user.getRole());
 			ResponseDto responseDTO = new ResponseDto();
@@ -299,8 +306,73 @@ public class UserServiceImpl implements UserService{
 		responseDTO.setStatus("success");
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
-	
-	
-	
+
+	@Override
+	public ResponseEntity<?> getPremiumPaymentDetails() {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		
+		List<PremiumPaymentDetails> premiumPaymentDetails = paymentDetailsRepository.findByStatus(false, user.getId());
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setData(premiumPaymentDetails);
+		responseDTO.setMessage("get payment details successfully");
+		responseDTO.setStatus("Success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+		
+	}
+
+	@Override
+	public ResponseEntity<?> makeInitialPayment(long paymentId) {
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		PremiumPaymentDetails paymentDetails = paymentDetailsRepository.findById(paymentId).orElse(null);
+		paymentDetails.setPaid(true);
+		paymentDetails.setStatus("success");
+		paymentDetailsRepository.save(paymentDetails);
+		
+		paymentDetails.getInsurance().setActive(true);
+		paymentDetails.getInsurance().setCompleted(true);
+		paymentDetails.getInsurance().setCompletedSteps("5");
+		paymentDetails.getInsurance().setStatus("active");
+		insuranceRepository.save(paymentDetails.getInsurance());
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("Successfully make payment.");
+		responseDTO.setStatus("Success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> makePaymentSuccess() {
+
+		User user = AppUtility.getCurrentUser();
+		
+		if (user == null) {
+			ResponseDto responseDTO = new ResponseDto();
+			responseDTO.setMessage("User not found.");
+			responseDTO.setStatus("fail");
+			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+		}
+		
+		List<PremiumPaymentDetails> premiumPaymentDetails = paymentDetailsRepository.findByStatus(true, user.getId());
+		
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setData(premiumPaymentDetails);
+		responseDTO.setMessage("get payment List details successfully");
+		responseDTO.setStatus("Success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);	}
 	
 }

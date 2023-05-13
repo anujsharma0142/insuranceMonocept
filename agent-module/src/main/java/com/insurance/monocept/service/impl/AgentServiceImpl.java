@@ -45,6 +45,7 @@ import com.insurance.monocept.repository.UserRoleRepository;
 import com.insurance.monocept.repository.UserUploadDocumentsRepository;
 import com.insurance.monocept.service.AgentService;
 import com.insurance.monocept.utility.AppUtility;
+import com.insurance.monocept.utility.MailUtility;
 import com.insurance.monocept.utility.TokenUtility;
 
 @Service
@@ -73,6 +74,9 @@ public class AgentServiceImpl implements AgentService{
 	
 	@Value("${jwt.app.secret}")
 	private String app_secret;
+	
+	@Autowired
+	private MailUtility mailUtility;
 	
 	
 	@Override
@@ -347,6 +351,7 @@ public class AgentServiceImpl implements AgentService{
 		userDetails.setNomineeName(userDetailsDto.getNomineeName());
 		userDetails.setNomineeNo(userDetailsDto.getNomineeNo());
 		userDetails.setNomineeRelation(userDetailsDto.getNomineeRelation());
+		userDetails.setDob(userDetailsDto.getDob());
 		userDetails.setUser(customer);
 		userDetailsRepository.save(userDetails);
 		
@@ -443,6 +448,16 @@ public class AgentServiceImpl implements AgentService{
 			responseDTO.setStatus("success");
 			responseDTO.setData(insurance);
 			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+
+	@Override
+	public ResponseEntity<?> sendMail(String email, String subject, String desription) {
+		mailUtility.sendSimpleMail(email, desription, subject);
+		ResponseDto responseDTO = new ResponseDto();
+		responseDTO.setMessage("Successfully send email.");
+		responseDTO.setStatus("success");
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
 	

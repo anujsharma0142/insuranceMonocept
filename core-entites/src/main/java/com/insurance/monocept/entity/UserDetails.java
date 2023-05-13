@@ -38,6 +38,8 @@ public class UserDetails {
 	
 	private String nomineeName;
 	
+	private String dob;
+	
 	@ManyToOne
 	private User user;
 	

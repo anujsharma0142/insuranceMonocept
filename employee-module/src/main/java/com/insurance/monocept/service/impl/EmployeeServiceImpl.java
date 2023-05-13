@@ -65,14 +65,16 @@ public class EmployeeServiceImpl implements EmployeeService{
 		
 		agent = new User();
 		agent.setEmail(agentDto.getEmail());
+		agent = new User();
+		agent.setEmail(agentDto.getEmail());
 		agent.setEmailVerified(true);
 		agent.setFirstName(agentDto.getFirstName());
-		agent.setIsLoginAllowed(true);
-		agent.setLastName(agentDto.getLasttName());
-		agent.setMobileNo(agentDto.getPhoneNo());
+		agent.setLoginAllowed(true);
+		agent.setLastName(agentDto.getLastName());
+		agent.setMobileNo(agentDto.getMobileNo());
 		agent.setPassword(encoder.encode(agentDto.getPassword()));
 		agent.setRole(userRole);
-		agent.setQualification(agentDto.getQalification());
+		agent.setQualification(agentDto.getQualification());
 		userRepository.save(agent);
 		agent.setLoginId("MONOINS" + agent.getId());
 		userRepository.save(agent);
@@ -142,10 +144,10 @@ public class EmployeeServiceImpl implements EmployeeService{
 		employee.setEmail(employeeDto.getEmail());
 		employee.setFirstName(employeeDto.getFirstName());
 		employee.setIsLoginAllowed(employeeDto.isLoginAllowed());
-		employee.setLastName(employeeDto.getLasttName());
-		employee.setMobileNo(employeeDto.getPhoneNo());
+		employee.setLastName(employeeDto.getLastName());
+		employee.setMobileNo(employeeDto.getMobileNo());
 		employee.setPassword(encoder.encode(employeeDto.getPassword()));
-		employee.setQualification(employeeDto.getQalification());
+		employee.setQualification(employeeDto.getQualification());
 		userRepository.save(employee);
 		
 		ResponseDto responseDTO = new ResponseDto();

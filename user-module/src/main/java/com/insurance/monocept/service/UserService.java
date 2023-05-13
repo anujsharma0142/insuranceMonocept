@@ -21,4 +21,10 @@ public interface UserService {
 
 	ResponseEntity<?> addUserDetails(UserDetailsDto userDetailsDto);
 
+	ResponseEntity<?> getPremiumPaymentDetails();
+
+	ResponseEntity<?> makeInitialPayment(long paymentId);
+
+	ResponseEntity<?> makePaymentSuccess();
+
 }
