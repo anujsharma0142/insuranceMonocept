@@ -13,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +41,12 @@ import com.insurance.monocept.entity.User;
 import com.insurance.monocept.entity.UserRole;
 import com.insurance.monocept.entity.UserUploadDocuments;
 import com.insurance.monocept.enums.UserRoles;
+import com.insurance.monocept.exception.AdminEmailIdAlreadyExists;
+import com.insurance.monocept.exception.AgentEmailIdAlreadyExists;
+import com.insurance.monocept.exception.EmailNotValidException;
+import com.insurance.monocept.exception.EmployeeEmailIdAlreadyExists;
+import com.insurance.monocept.exception.UserNotFoundException;
+import com.insurance.monocept.exception.UserUnAuthorizeException;
 import com.insurance.monocept.repository.InsuranceRepository;
 import com.insurance.monocept.repository.InsuranceSchemeRepository;
 import com.insurance.monocept.repository.InsuranceTypeRepository;
@@ -53,6 +61,8 @@ import com.insurance.monocept.utility.TokenUtility;
 
 @Service
 public class AdminServiceImpl implements AdminService{
+	
+	public static final Logger LOGGER=LoggerFactory.getLogger(AdminServiceImpl.class);
 	
 	@Autowired
 	private PasswordEncoder encoder;
@@ -94,25 +104,31 @@ public class AdminServiceImpl implements AdminService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("User not found.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("Admin credentials invalid.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
 		User employee = userRepository.findByEmail(employeeDto.getEmail());
 		
 		if(employee != null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee email Id already exist.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Employee email Id already exist");
+			throw new EmployeeEmailIdAlreadyExists("Employee email Id already exist.");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("Employee email Id already exist.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
 		UserRole userRole = userRoleRepository.findByType(UserRoles.EMPLOYEE.getRole());
@@ -143,25 +159,31 @@ public class AdminServiceImpl implements AdminService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("User not found.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("Admin credentials invalid.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
 		User agent = userRepository.findByEmail(agentDto.getEmail());
 		
 		if(agent != null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("agent email Id already exist.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("agent email Id already exist");
+			throw new AgentEmailIdAlreadyExists("agent email Id already exist");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("agent email Id already exist.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
 		UserRole userRole = userRoleRepository.findByType(UserRoles.AGENT.getRole());
@@ -191,16 +213,20 @@ public class AdminServiceImpl implements AdminService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("User not found.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("Admin credentials invalid.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		UserRole userRole = userRoleRepository.findByType(UserRoles.AGENT.getRole());
 		Pageable pageable = PageRequest.of(pageNo, 10);
@@ -218,16 +244,20 @@ public class AdminServiceImpl implements AdminService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("User not found.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("Admin credentials invalid.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		UserRole userRole = userRoleRepository.findByType(UserRoles.EMPLOYEE.getRole());
 		Pageable pageable = PageRequest.of(pageNo, 10);
@@ -245,25 +275,23 @@ public class AdminServiceImpl implements AdminService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		
 		User employee = userRepository.findById(employeeDto.getId()).orElse(null);
 		
 		if(employee == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Employee not found");
+			throw new UserNotFoundException("Employee not Found");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("Employee not found.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
 		
@@ -288,25 +316,19 @@ public class AdminServiceImpl implements AdminService{
 User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		
 		User employee = userRepository.findById(employeeDto.getId()).orElse(null);
 		
 		if(employee == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Employee not found");
+			throw new UserNotFoundException("Employee not Found");
 		}
 		
 		
@@ -331,19 +353,19 @@ User user = AppUtility.getCurrentUser();
 		User user = userRepository.findByEmail(adminDto.getEmail());
 
 		if (user != null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Email already exists please Login");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin email already exists");
+			throw new AdminEmailIdAlreadyExists("Admin email already exists");
 		} else {
 			String regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}";
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher = pattern.matcher(adminDto.getEmail());
 			if (!matcher.matches()) {
-				ResponseDto responseDTO = new ResponseDto();
-				responseDTO.setMessage("Email is not valid.");
-				responseDTO.setStatus("fail");
-				return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+				LOGGER.error("Email is not valid");
+				throw new EmailNotValidException("Email is not valid");
+//				ResponseDto responseDTO = new ResponseDto();
+//				responseDTO.setMessage("Email is not valid.");
+//				responseDTO.setStatus("fail");
+//				return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 			}
 
 			UserRole userRole = userRoleRepository.findByType(UserRoles.ADMIN.getRole());
@@ -384,16 +406,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		
 		InsuranceType insurancetype = new InsuranceType();
@@ -429,19 +447,6 @@ User user = AppUtility.getCurrentUser();
 	             e.printStackTrace();
 	         }
 	         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
-	         
-//	         
-//	      Path file = root.resolve(filename);
-//	      Resource resource = new UrlResource(file.toUri());
-//
-//	      if (resource.exists() || resource.isReadable()) {
-//	        return resource;
-//	      } else {
-//	        throw new RuntimeException("Could not read the file!");
-//	      }
-//	    } catch (MalformedURLException e) {
-//	      throw new RuntimeException("Error: " + e.getMessage());
-//	    }
 	  }
 
 	@Override
@@ -449,16 +454,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		
 		
@@ -505,16 +506,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		
 		PremiumPaymentDetails premiumPaymentDetails = new PremiumPaymentDetails();
@@ -536,16 +533,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}	
 		UserUploadDocuments documents = userUploadDocumentsRepository.findById(documentId).orElse(null);
 		if(approved) {
@@ -578,16 +571,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		List<UserUploadDocuments> documents = userUploadDocumentsRepository.findByStatus("PENDING");
 		List<UserUplaodDocumentsDto> documentsDtos = new ArrayList<>();
@@ -613,23 +602,17 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		User userChangePassword = userRepository.findById(id).orElse(null);
 		if(userChangePassword ==  null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		userChangePassword.setPassword(encoder.encode(password));
 		userRepository.save(userChangePassword);
@@ -646,16 +629,12 @@ User user = AppUtility.getCurrentUser();
 		
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		
 		List<InsuranceType> list = insuranceTypeRepository.findAll();
@@ -673,16 +652,12 @@ User user = AppUtility.getCurrentUser();
 		
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		System.out.println(insuranceTypeDto.toString());
 		InsuranceType  insuranceType = insuranceTypeRepository.findById(insuranceTypeDto.getId()).orElse(null);
@@ -718,16 +693,12 @@ User user = AppUtility.getCurrentUser();
 		
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		List<InsuranceScheme> insuranceSchemes = insuranceSchemeRepository.findAll();
 		ResponseDto responseDTO = new ResponseDto();
@@ -743,16 +714,12 @@ User user = AppUtility.getCurrentUser();
 		
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		InsuranceScheme insuranceScheme = insuranceSchemeRepository.findById(insuranceSchemeDto.getId()).orElse(null);
 		System.out.println(insuranceSchemeDto.getInsuranceType());
@@ -795,16 +762,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		
 		UserRole userRole = userRoleRepository.findByType(UserRoles.USER.getRole());
@@ -825,16 +788,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		user.setPassword(encoder.encode(password));
 		userRepository.save(user);
@@ -850,16 +809,12 @@ User user = AppUtility.getCurrentUser();
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_ADMIN")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Admin credentials Invalid");
+			throw new UserUnAuthorizeException("Admin credentials Invalid");
 		}
 		Pageable pageable = PageRequest.of(pageNo, 10);
 		List<UserUploadDocuments> userUploadDocuments = userUploadDocumentsRepository.findByStatus(type, pageable);

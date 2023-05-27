@@ -74,4 +74,24 @@ public class UserController {
 	public ResponseEntity<?> makePaymentSuccess(){
 		return userService.makePaymentSuccess();
 	}
+	
+	@GetMapping("/getAllInsuranceScheme")
+	public ResponseEntity<?> getAllInsuranceScheme(){
+		return userService.getAllInsuranceScheme();
+	}
+	
+	@GetMapping("/getInsuranceByUser")
+	public ResponseEntity<?> getInsuranceByUser(@RequestParam long insuranceId){
+		return userService.getInsuranceByUser( insuranceId);
+	}
+	
+	@PostMapping("/addInsurance")
+	public ResponseEntity<?> addInsurance(@RequestBody InsuranceDto insuranceDto ){
+		return userService.addInsurance(insuranceDto);
+	}
+	@GetMapping("/getInsurance")
+	public ResponseEntity<?> getInsurance(){
+		return userService.getInsurance();
+	}
+	
 }

@@ -27,4 +27,12 @@ public interface UserService {
 
 	ResponseEntity<?> makePaymentSuccess();
 
+	ResponseEntity<?> getAllInsuranceScheme();
+
+	ResponseEntity<?> getInsuranceByUser(long insuranceId);
+
+	ResponseEntity<?> addInsurance(InsuranceDto insuranceDto);
+
+	ResponseEntity<?> getInsurance();
+
 }

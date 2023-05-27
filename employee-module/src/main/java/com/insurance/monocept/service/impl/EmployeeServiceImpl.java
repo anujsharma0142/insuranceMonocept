@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,9 @@ import com.insurance.monocept.dto.ResponseDto;
 import com.insurance.monocept.entity.User;
 import com.insurance.monocept.entity.UserRole;
 import com.insurance.monocept.enums.UserRoles;
+import com.insurance.monocept.exception.AgentEmailIdAlreadyExists;
+import com.insurance.monocept.exception.EmailNotValidException;
+import com.insurance.monocept.exception.UserNotFoundException;
 import com.insurance.monocept.repository.UserRepository;
 import com.insurance.monocept.repository.UserRoleRepository;
 import com.insurance.monocept.service.EmployeeService;
@@ -24,6 +29,8 @@ import com.insurance.monocept.utility.AppUtility;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
+	
+	public static final Logger LOGGER=LoggerFactory.getLogger(EmployeeServiceImpl.class);
 	
 	@Autowired
 	private PasswordEncoder encoder;
@@ -40,25 +47,19 @@ public class EmployeeServiceImpl implements EmployeeService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_EMPLOYEE")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Employee credentials invalid");
 		}
 		
 		User agent = userRepository.findByEmail(agentDto.getEmail());
 		
 		if(agent != null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("agent email Id already exist.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Agent email Id already exists");
+			throw new AgentEmailIdAlreadyExists("agent email Id already exist");
 		}
 		
 		UserRole userRole = userRoleRepository.findByType(UserRoles.AGENT.getRole());
@@ -90,16 +91,12 @@ public class EmployeeServiceImpl implements EmployeeService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_EMPLOYEE")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Employee credentials invalid");
 		}
 		UserRole userRole = userRoleRepository.findByType(UserRoles.AGENT.getRole());
 		Pageable pageable = PageRequest.of(pageNo, 20);
@@ -119,25 +116,19 @@ public class EmployeeServiceImpl implements EmployeeService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_EMPLOYEE")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Admin credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Employee credentials invalid");
 		}
 		
 		User employee = userRepository.findByEmail(employeeDto.getEmail());
 		
 		if(employee == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Employee not found");
+			throw new UserNotFoundException("Employee not Found");
 		}
 		
 		

@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class UserDetailsDto {
+	
+	private String email;
 
 	private Long id;
 	
@@ -16,4 +18,12 @@ public class UserDetailsDto {
 	private String panCard;
 	
 	private String state;
+	
+	private String dob;
+	
+	private String nomineeNo;
+	
+	private String nomineeRelation;
+	
+	private String nomineeName;
 }

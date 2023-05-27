@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +39,9 @@ import com.insurance.monocept.entity.UserDetails;
 import com.insurance.monocept.entity.UserRole;
 import com.insurance.monocept.entity.UserUploadDocuments;
 import com.insurance.monocept.enums.UserRoles;
+import com.insurance.monocept.exception.EmailNotValidException;
+import com.insurance.monocept.exception.UserEmailIdAlreadyExists;
+import com.insurance.monocept.exception.UserNotFoundException;
 import com.insurance.monocept.repository.InsuranceRepository;
 import com.insurance.monocept.repository.InsuranceSchemeRepository;
 import com.insurance.monocept.repository.UserDetailsRepository;
@@ -50,6 +55,8 @@ import com.insurance.monocept.utility.TokenUtility;
 
 @Service
 public class AgentServiceImpl implements AgentService{
+	
+	public static final Logger LOGGER=LoggerFactory.getLogger(AgentServiceImpl.class);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -83,11 +90,8 @@ public class AgentServiceImpl implements AgentService{
 	public ResponseEntity<?> getUserDetails(String email) {
 		User user = AppUtility.getCurrentUser();
 		if(user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setData(null);
-			responseDTO.setMessage("User not found");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		User customer = userRepository.findByEmail(email);
 		UserDetails details = userDetailsRepository.findByUser(customer); 
@@ -105,25 +109,23 @@ public class AgentServiceImpl implements AgentService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 		
 		User user1 = userRepository.findByEmail(agentDto.getEmail());
 		
 		if(user1 != null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("user email Id already exist.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("user email Id already exist");
+			throw new UserEmailIdAlreadyExists("user email Id already exist");
+//			ResponseDto responseDTO = new ResponseDto();
+//			responseDTO.setMessage("user email Id already exist.");
+//			responseDTO.setStatus("fail");
+//			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
 		}
 		
 		UserRole userRole = userRoleRepository.findByType(UserRoles.USER.getRole());
@@ -155,16 +157,12 @@ public class AgentServiceImpl implements AgentService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 		Pageable pageable = PageRequest.of(pageNo, 10);
 		List<User> users = userRepository.findByEmpId(user.getId(), pageable);
@@ -181,16 +179,12 @@ public class AgentServiceImpl implements AgentService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 		
 		User customer = userRepository.findById(customerDto.getId()).orElse(null);
@@ -213,16 +207,12 @@ public class AgentServiceImpl implements AgentService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 		User customer = userRepository.findByEmail(insuranceDto.getEmail());
 		InsuranceScheme insuranceScheme = insuranceSchemeRepository.findById(insuranceDto.getInsuranceSchemeId()).orElse(null);
@@ -255,16 +245,12 @@ public class AgentServiceImpl implements AgentService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 		System.out.println(panCard.getOriginalFilename());
 		System.out.println(adhaarFront.getOriginalFilename());
@@ -323,16 +309,12 @@ public class AgentServiceImpl implements AgentService{
 		User user = AppUtility.getCurrentUser();
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Employee credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 		User customer = userRepository.findByEmail(userDetailsDto.getEmail());
 		UserDetails userDetails = userDetailsRepository.findByUser(customer);
@@ -367,16 +349,12 @@ public class AgentServiceImpl implements AgentService{
 		
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Agent credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 		List<InsuranceScheme> insuranceSchemes = insuranceSchemeRepository.findAll();
 		ResponseDto responseDTO = new ResponseDto();
@@ -393,16 +371,12 @@ public class AgentServiceImpl implements AgentService{
 		
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Agent credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 			
 			
@@ -425,16 +399,12 @@ public class AgentServiceImpl implements AgentService{
 		
 		
 		if (user == null) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("User not found.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("User not found");
+			throw new UserNotFoundException("User not Found");
 		}
 		if(!user.getRole().getType().equals("ROLE_AGENT")) {
-			ResponseDto responseDTO = new ResponseDto();
-			responseDTO.setMessage("Agent credentials invalid.");
-			responseDTO.setStatus("fail");
-			return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+			LOGGER.error("Invalid credentials");
+			throw new EmailNotValidException("Agent credentials invalid");
 		}
 			
 			
